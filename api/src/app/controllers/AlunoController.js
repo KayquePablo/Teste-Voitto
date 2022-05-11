@@ -7,21 +7,22 @@ class AlunoController {
   }
 
   async read(req, res) {
-    const aluno = await Aluno.id_aluno;
-    res.json(aluno);
+    const { id } = req.params;
+    const aluno = await Aluno.findByPk(id);
+    return res.json(aluno);
   }
 
-  // async create(req, res) {
-  //   // TODO
-  // }
+  async create(req, res) {
+    // TODO
+  }
 
-  // async update(req, res) {
-  //   // TODO
-  // }
+  async update(req, res) {
+    // TODO
+  }
 
-  // async delete(req, res) {
-  //   // TODO
-  // }
+  async delete(req, res) {
+    // TODO
+  }
 }
 
 export default new AlunoController();
