@@ -10,7 +10,9 @@ class AlunoController {
     const { id } = req.params;
     try {
       const aluno = await Aluno.findOne({
-        where: { id: Number(id) }
+        where: {
+          id: Number(id)
+        }
       });
       return res.status(200).json(aluno);
     } catch (error) {
@@ -52,9 +54,11 @@ class AlunoController {
     const { id } = req.params;
     try {
       await Aluno.destroy({
-        where: { id: Number(id) }
+        where: {
+          id: Number(id)
+        }
       });
-      return res.json({ mensagem: `Aluno com o id ${id} foi deletado` });
+      return res.json({ mensagem: `Aluno foi deletado com sucesso!` });
     } catch (error) {
       return res.status(500).json(error.message);
     }
