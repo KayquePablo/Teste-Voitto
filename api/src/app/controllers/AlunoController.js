@@ -11,56 +11,83 @@ class AlunoController {
     try {
       const aluno = await Aluno.findOne({
         where: {
-          id: Number(id)
+          id
         }
       });
-      return res.status(200).json(aluno);
+      res.status(200).json(aluno);
     } catch (error) {
-      return res.status(500).json(error.message);
+      res.status(500).json(error.message);
     }
   }
 
   async create(req, res) {
-    const create_aluno = req.body;
     try {
-      const created_aluno = await Aluno.create(create_aluno);
-      return res.json(created_aluno);
+      await Aluno.create({
+        nome: req.body.nome,
+        email: req.body.email,
+        cep: req.body.cep,
+        cidade: req.body.cidade,
+        estado: req.body.estado
+      });
+      res.status(201).send({ mensagem: 'Cadastro Realizado com sucesso!' });
     } catch (error) {
-      return res.status(500).json(error.message);
+      res.status(500).json(error.message);
     }
   }
 
   async update(req, res) {
     const { id } = req.params;
-    const up_Aluno = req.body;
+
     try {
-      await Aluno.update(up_Aluno, {
+      const aluno = await Aluno.findAll({
         where: {
-          id: Number(id)
+          id
         }
       });
-      const updated_aluno = await Aluno.findOne({
-        where: {
-          id: Number(id)
-        }
-      });
-      return res.json(updated_aluno);
+
+      if (aluno.length === 0) {
+        throw new Error('Aluno não encontrado!');
+      }
+
+      await Aluno.update(
+        {
+          nome: req.body.nome,
+          email: req.body.email,
+          cep: req.body.cep,
+          cidade: req.body.cidade,
+          estado: req.body.estado
+        },
+        { where: { id } }
+      );
+
+      res.status(200).send({ mensagem: 'Dados do Aluno Atualizados.' });
     } catch (error) {
-      return res.status(500).json(error.message);
+      res.status(500).json(error.message);
     }
   }
 
   async delete(req, res) {
     const { id } = req.params;
+
     try {
-      await Aluno.destroy({
+      const aluno = await Aluno.findAll({
         where: {
-          id: Number(id)
+          id
         }
       });
-      return res.json({ mensagem: `Aluno foi deletado com sucesso!` });
+
+      if (aluno.length === 0) {
+        throw new Error('Aluno não encontrado!');
+      }
+      await Aluno.destroy({
+        where: {
+          id
+        }
+      });
+
+      res.status(200).send({ mensagem: 'Aluno deletado.' });
     } catch (error) {
-      return res.status(500).json(error.message);
+      res.status(500).json(error.message);
     }
   }
 }

@@ -17,6 +17,5 @@ routes.delete('/alunos/:id', AlunosController.delete);
 
 routes.get('/cursos', CursoController.index);
 
-routes.post('/cursos/aluno', CursoAlunoController.create);
-
+routes.post('/alunos/:id/cursos', CursoAlunoController.assign_curso);
 export default routes;
