@@ -58,7 +58,7 @@ const Courses: React.FC = () => {
   const handleDeleteCourse = (stCourse: Course) => {
     setStudentCourses(studentCourses.filter(stc => stc.id !== stCourse.id));
     setCourses([...courses, stCourse]);
-    toastSuccess('Aluno desmatriculado com sucesso!');
+    toastSuccess('Aluno Excluido com sucesso!');
   };
 
   const renderStudentName = () => {

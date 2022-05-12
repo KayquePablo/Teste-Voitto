@@ -16,9 +16,14 @@ import { toast } from 'react-toastify';
 import useWindowSize from '@/hooks/useWindowSize';
 import { Button } from '@material-ui/core';
 import { buttonTheme } from '@/utils/Config';
+import Modal from '../../Modal';
+import Link from 'next/link';
 
 const StudentTable: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);
+  const [modal, setModal] = useState<boolean>(false);
+  const [edit, setEdit] = useState<boolean>(false);
+  const [currentEdit, setcurrentEdit] = useState<Student>();
   const mobile = useWindowSize().width < 900;
 
   useEffect(() => {
@@ -41,12 +46,25 @@ const StudentTable: React.FC = () => {
       });
   }, []);
 
-  const openCreateStudentModal = (): void => {
-    alert('Abrir modal de criação de aluno');
+  const handleAttStudents = (student: Student, isEditing: boolean = false): void => {
+    if (isEditing) {
+      const newStudentArr = students.map(st => {
+        if (st.id === student.id) {
+          return student;
+        } else {
+          return st;
+        }
+      });
+      setStudents(newStudentArr);
+    } else {
+      setStudents([...students, student]);
+    }
   };
 
-  const openDeleteStudentModal = (id: number): void => {
-    alert(`Abrir modal de criação de aluno ${id}`);
+  const handleDelete = async (id: number) => {
+    setStudents(students.filter(i => i.id !== id));
+    toast.success('Aluno excluído com sucesso!', { autoClose: 2000 });
+    await api.delete(`/alunos/${id}`);
   };
 
   return (
@@ -54,7 +72,7 @@ const StudentTable: React.FC = () => {
       <header>
         <Button
           fullWidth
-          onClick={() => openCreateStudentModal()}
+          onClick={() => setModal(true)}
           color="primary"
           variant={buttonTheme}
         >
@@ -62,7 +80,7 @@ const StudentTable: React.FC = () => {
         </Button>
       </header>
 
-      {students ? (
+      {students.length > 0 ? (
         !mobile ? (
           <>
             <Table>
@@ -80,18 +98,28 @@ const StudentTable: React.FC = () => {
                 students.map((student, key) => (
                   <BodyLine key={key}>
                     <Item> {student.id} </Item>
-                    <Item> {student.nome} </Item>
+                    <Item>
+                      <Link href={`alunos/${student.id}`}>
+                        <a>{student.nome}</a>
+                      </Link>
+                    </Item>
                     <Item> {student.email} </Item>
                     <Item> {student.cep} </Item>
                     <Item> {student.estado} </Item>
                     <Item> {student.cidade} </Item>
                     <Item>
-                      <button>editar</button>
+                      <button
+                        onClick={() => {
+                          setEdit(true),
+                            setcurrentEdit(student),
+                            setModal(true);
+                        }}
+                      >
+                        editar
+                      </button>
                     </Item>
                     <Item>
-                      <button
-                        onClick={() => openDeleteStudentModal(student.id)}
-                      >
+                      <button onClick={() => handleDelete(student.id)}>
                         excluir
                       </button>
                     </Item>
@@ -149,8 +177,21 @@ const StudentTable: React.FC = () => {
           <p>Você ainda não fez nenhuma alteração</p>
         </Message>
       )}
+
+      {modal && (
+        <Modal
+          setModal={setModal}
+          edit={edit}
+          setEdit={setEdit}
+          currentEdit={currentEdit}
+          attStudents={handleAttStudents}
+          students={students}
+        />
+      )}
+
     </Container>
   );
 };
+
 
 export default StudentTable;

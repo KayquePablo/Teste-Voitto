@@ -11,83 +11,56 @@ class AlunoController {
     try {
       const aluno = await Aluno.findOne({
         where: {
-          id
+          id: Number(id)
         }
       });
-      res.status(200).json(aluno);
+      return res.status(200).json(aluno);
     } catch (error) {
-      res.status(500).json(error.message);
+      return res.status(500).json(error.message);
     }
   }
 
   async create(req, res) {
+    const novoAluno = req.body;
     try {
-      await Aluno.create({
-        nome: req.body.nome,
-        email: req.body.email,
-        cep: req.body.cep,
-        cidade: req.body.cidade,
-        estado: req.body.estado
-      });
-      res.status(201).send({ mensagem: 'Cadastro Realizado com sucesso!' });
+      const alunoCriado = await Aluno.create(novoAluno);
+      return res.json(alunoCriado);
     } catch (error) {
-      res.status(500).json(error.message);
+      return res.status(500).json(error.message);
     }
   }
 
   async update(req, res) {
     const { id } = req.params;
-
+    const novasInfos = req.body;
     try {
-      const aluno = await Aluno.findAll({
+      await Aluno.update(novasInfos, {
         where: {
-          id
+          id: Number(id)
         }
       });
-
-      if (aluno.length === 0) {
-        throw new Error('Aluno não encontrado!');
-      }
-
-      await Aluno.update(
-        {
-          nome: req.body.nome,
-          email: req.body.email,
-          cep: req.body.cep,
-          cidade: req.body.cidade,
-          estado: req.body.estado
-        },
-        { where: { id } }
-      );
-
-      res.status(200).send({ mensagem: 'Dados do Aluno Atualizados.' });
+      const alunoAtualizado = await Aluno.findOne({
+        where: {
+          id: Number(id)
+        }
+      });
+      return res.json(alunoAtualizado);
     } catch (error) {
-      res.status(500).json(error.message);
+      return res.status(500).json(error.message);
     }
   }
 
   async delete(req, res) {
     const { id } = req.params;
-
     try {
-      const aluno = await Aluno.findAll({
-        where: {
-          id
-        }
-      });
-
-      if (aluno.length === 0) {
-        throw new Error('Aluno não encontrado!');
-      }
       await Aluno.destroy({
         where: {
-          id
+          id: Number(id)
         }
       });
-
-      res.status(200).send({ mensagem: 'Aluno deletado.' });
+      return res.json({ mensagem: `Aluno referente ao id ${id} deletado` });
     } catch (error) {
-      res.status(500).json(error.message);
+      return res.status(500).json(error.message);
     }
   }
 }
